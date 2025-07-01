@@ -1,4 +1,4 @@
-<image src="../img/picture1.jpg" alt="Destino turístico">
+<image src="../img/picture1.png" alt="Destino turístico">
 Lifeforstock , en freepik
 
 # RESERVA CONFIRMADA
