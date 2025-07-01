@@ -1,4 +1,4 @@
-!["Destino turístico"] ("../img/picture1.png")
+!["Destino turístico"]("../img/picture1.png")
 Lifeforstock , en freepik
 
 # RESERVA CONFIRMADA
