@@ -1,10 +1,6 @@
-
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import seaborn as sns
-from scipy import stats
-from scipy.stats import chi2_contingency, mannwhitneyu, pearsonr
+from sklearn.preprocessing import FunctionTransformer, OrdinalEncoder
 
 
 def tipifica_variables(df: pd.DataFrame, umbral_categoria: int, umbral_continua: float):
@@ -51,7 +47,7 @@ def tipifica_variables(df: pd.DataFrame, umbral_categoria: int, umbral_continua:
     return return_df
 
 
-def nombres_columnas(df):
+def nombres_columnas(df: pd.DataFrame):
     df.rename(columns = {"is_canceled":"booking_status",
                       "arrival_date_year":"arrival_year",
                       "arrival_date_month":"arrival_month",
@@ -91,3 +87,77 @@ def nombres_columnas(df):
                         "booking_status":"canceled",
                         }, inplace = True)
 
+    return df
+
+
+def total_transform(df):
+    #---------------------------- CAMBIO 1-----------------------------------------
+    # ASIGNACIÓN DE MEDIANA A POMOCIONES Y DEVOLUCIONES
+    # ASIGNACIÓN DE MEDIANA A VALORES NULL
+    # TRANSFORMACIÓN LOGÍSTICA A LA COLUMNA 'daily_price'
+    df.loc[df["daily_price"] <= 0, "daily_price"] = 95.2
+    df.loc[df["daily_price"].isnull(), "daily_price"] = 95.2
+    df["daily_price"] = np.log10(df["daily_price"])
+    #---------------------------- CAMBIO 2-----------------------------------------
+    # ASIGNACIÓN DE MEDIANA A VALORES INCONSISTENTES Y TRANSFORMACIÓN LOGÍSTICA A LA COLUMNA 'lead_time'
+    df.loc[df["lead_time"] <= 0, "lead_time"] = 66
+    df.loc[df["lead_time"].isnull(), "lead_time"] = 66
+    df["lead_time"] = np.log10(df["lead_time"])
+    #---------------------------- CAMBIO 3-----------------------------------------
+    # ASIGNACIÓN DE MEDIANA EN 'adults' DE REGISTROS CON VALOR 0 COINCIDENTES EN LAS COLUMNAS 'adults' Y 'children'
+    # ASIGNACIÓN DE MEDIANA A VALORES NULL
+    df.loc[df["adults"].isnull(), "adults"] = 2
+    df.loc[df["children"].isnull(), "children"] = 0
+    df.loc[(df["adults"] < 0), "adults"] = 0
+    df.loc[(df["children"] < 0), "children"] = 0
+    df.loc[((df["adults"] <= 0)&(df["children"] <= 0)), "adults"] = 2
+    #---------------------------- CAMBIO 4-----------------------------------------
+    # TRANSFORMACIÓN DE 'children' A CATEGÓRICA BINARIA
+    df.loc[df["children"] > 0, "children"] = 1
+    #---------------------------- CAMBIO 5-----------------------------------------
+    # TRANSFORMACIÓN DE 'total_book' A CATEGÓRICA BINARIA
+    # ASIGNACIÓN DE MEDIANA A VALORES NULL
+    df.loc[df["total_book"].isnull(), "total_book"] = 0
+    df.loc[df["total_book"] < 0, "total_book"] = 0
+    df.loc[df["total_book"] > 0, "total_book"] = 1
+    #---------------------------- CAMBIO 6-----------------------------------------
+    # TRANSFORMACIÓN DE 'pre_cancel' Y 'pre_not_cancel' A CATEGÓRICA BINARIA
+    # ASIGNACIÓN DE MEDIANA A VALORES NULL
+    df.loc[df["pre_cancel"].isnull(), "pre_cancel"] = 0
+    df.loc[df["pre_not_cancel"].isnull(), "pre_not_cancel"] = 0
+    df.loc[df["pre_cancel"] < 0, "pre_cancel"] = 0
+    df.loc[df["pre_not_cancel"] < 0, "pre_not_cancel"] = 0
+    df.loc[df["pre_cancel"] > 0, "pre_cancel"] = 1
+    df.loc[df["pre_not_cancel"] > 0, "pre_not_cancel"] = 1
+    
+    #---------------------------- CAMBIO 8-----------------------------------------
+    # ASIGNACIÓN DE MEDIANA EN VALORES INCONSISTENTES COINCIDENTES EN LAS COLUMNAS 'week_nights' y 'weekend_nights'
+    # TRANSFORMACIÓN DE ETIQUETAS PARA UNIFICAR LOS VALORES POR ENCIMA DE 5 EN 'week_nights' Y POR ENCIMA DE 2 EN 'weekend_nights'
+    # ASIGNACIÓN DE MEDIANA A VALORES NULL
+    df.loc[df["week_nights"].isnull(), "week_nights"] = 2
+    df.loc[df["weekend_nights"].isnull(), "weekend_nights"] = 1
+    df.loc[df["week_nights"] < 0, "week_nights"] = 0
+    df.loc[df["weekend_nights"] < 0, "weekend_nights"] = 0
+    df.loc[((df["week_nights"] == 0)&(df["weekend_nights"] == 0)), "week_nights"] = 2    
+    df.loc[df["week_nights"] > 5, "week_nights"] = 6
+    df.loc[df["weekend_nights"] > 2, "weekend_nights"] = 3
+    #---------------------------- CAMBIO 9-----------------------------------------
+    # TRANSFORMACIÓN DE 'meal_plan' A VARIABLE NUMÉRICA CON ORDINAL ENCODER
+    # ASIGNACIÓN DE MODA A VALORES NULL
+    list_meal = ["SC","RO","BB","HB","FB"]
+    df.loc[df["meal_plan"].isnull(), "meal_plan"] = "BB"
+    df.loc[~df["meal_plan"].isin(list_meal), "meal_plan"] = "BB"   
+    encoder = OrdinalEncoder(categories=[["SC","RO","BB","HB","FB"]])    
+    df[["meal_plan"]] = encoder.fit_transform(df[["meal_plan"]])
+    #---------------------------- CAMBIO 10-----------------------------------------
+    # TRANSFORMACIÓN DE 'parking' A VARIABLE BINARIA
+    # ASIGNACIÓN DE MEDIANA A VALORES NULL
+    df.loc[df["parking"].isnull(), "parking"] = 0
+    df.loc[df["parking"] < 0, "parking"] = 0
+    df.loc[df["parking"] > 0, "parking"] = 1
+
+    #---------------------------- CAMBIO 7-----------------------------------------
+    # ELIMINACIÓN DE 'arr_date'
+    df.drop(columns = ["arr_date"], inplace = True)
+
+    return df
