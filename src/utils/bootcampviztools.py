@@ -188,11 +188,9 @@ def plot_combined_graphs(df, columns, whisker_width=1.5, bins = None):
         plt.tight_layout()
         plt.show()
 
-
 def plot_grouped_boxplots(df, cat_col, num_col, group_size = 5):
     unique_cats = df[cat_col].unique()
     num_cats = len(unique_cats)
-
 
     for i in range(0, num_cats, group_size):
         subset_cats = unique_cats[i:i+group_size]
@@ -208,7 +206,7 @@ def plot_grouped_boxplots(df, cat_col, num_col, group_size = 5):
 def plot_grouped_histograms(df, cat_col, num_col, group_size):
     unique_cats = df[cat_col].unique()
     num_cats = len(unique_cats)
-
+    
     for i in range(0, num_cats, group_size):
         subset_cats = unique_cats[i:i+group_size]
         subset_df = df[df[cat_col].isin(subset_cats)]

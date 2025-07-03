@@ -1,4 +1,5 @@
 __pycache__/
 catboost_info/
+bootcampviztools.py
 Hotel_Bookings.csv
 Hotel_Reservations.csv

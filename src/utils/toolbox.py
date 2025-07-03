@@ -47,8 +47,8 @@ def tipifica_variables(df: pd.DataFrame, umbral_categoria: int, umbral_continua:
     return return_df
 
 
-def nombres_columnas(df: pd.DataFrame):
-    df.rename(columns = {"is_canceled":"booking_status",
+def nombres_columnas(df_names):
+    df_names.rename(columns = {"is_canceled":"booking_status",
                       "arrival_date_year":"arrival_year",
                       "arrival_date_month":"arrival_month",
                       "arrival_date_day_of_month":"arrival_date",
@@ -67,7 +67,7 @@ def nombres_columnas(df: pd.DataFrame):
                       "adr":"avg_price_per_room",
                       }, inplace = True)
 
-    df.rename(columns = {"no_of_adults":"adults",
+    df_names.rename(columns = {"no_of_adults":"adults",
                         "no_of_children":"children",
                         "no_of_weekend_nights":"weekend_nights",
                         "no_of_week_nights":"week_nights",
@@ -87,10 +87,12 @@ def nombres_columnas(df: pd.DataFrame):
                         "booking_status":"canceled",
                         }, inplace = True)
 
-    return df
+    return df_names
 
 
-def total_transform(df):
+def total_transform(df_main):
+    
+    df = nombres_columnas(df_main)
     #---------------------------- CAMBIO 1-----------------------------------------
     # ASIGNACIÓN DE MEDIANA A POMOCIONES Y DEVOLUCIONES
     # ASIGNACIÓN DE MEDIANA A VALORES NULL
