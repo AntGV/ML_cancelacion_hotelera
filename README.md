@@ -47,6 +47,20 @@ ML_CANCELACION_HOTELERA ----------- Directorio raiz del proyecto.
     main.ipynb ------------------------------ Notebook donde se incluye el proceso completo, paso a paso, de creación del modelo.  
     presentacion.pdf ------------------------ Archivo pdf con la presentación del proyecto.  
 
+
+```python
+├── ML_CANCELACION_HOTELERA/  # Directorio raiz del proyecto.  
+    ├── src/                  # ubdirectorio de almacenamiento.
+        ├── data/             # Carpeta que contiene los dataset de trabajo una vez modificados los dataset fuente. 
+        ├── data_sample/      # Carpeta que incluye una muestra del dataset de trabajo (dos archivos, con y sin target), para su empleo posterior en pruebas.
+        ├── img/              # En esta carpeta se guardan las imágenes empleadas en el proyecto.
+        ├── models/           # Carpeta donde se almacenará para producción el modelo desarrollado.
+        ├── notebooks/        # Contiene los diferentes notebooks de trabajo y evaluación empleados en el proyecto.
+        ├── utils/            # En este directorio se almacenan losarchivos con funciones recurrentes empleadas en el análisis.
+    ├── main.ipynb            # Notebook donde se incluye el proceso completo, paso a paso, de creación del modelo.
+    ├── presentacion.pdf      # Archivo pdf con la presentación del proyecto.
+```
+
 ---
 
 
