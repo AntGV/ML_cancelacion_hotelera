@@ -1,6 +1,43 @@
+import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 import pandas as pd
-from sklearn.preprocessing import FunctionTransformer, OrdinalEncoder
+from sklearn.preprocessing import OrdinalEncoder
+
+def pinta_distribucion_categoricas(df, columnas_categoricas, relativa=False, mostrar_valores=False, giro = 45):
+    num_columnas = len(columnas_categoricas)
+    num_filas = (num_columnas // 2) + (num_columnas % 2)
+
+    fig, axes = plt.subplots(num_filas, 2, figsize=(15, 5 * num_filas))
+    axes = axes.flatten() 
+
+    for i, col in enumerate(columnas_categoricas):
+        ax = axes[i]
+        if relativa:
+            total = df[col].value_counts().sum()
+            serie = df[col].value_counts().apply(lambda x: x / total)
+            sns.barplot(x=serie.index, y=serie, ax=ax, palette='viridis', hue = serie.index, legend = False)
+            ax.set_ylabel('Frecuencia Relativa')
+        else:
+            serie = df[col].value_counts()
+            sns.barplot(x=serie.index, y=serie, ax=ax, palette='viridis', hue = serie.index, legend = False)
+            ax.set_ylabel('Frecuencia')
+
+        ax.set_title(f'Distribución de {col}')
+        ax.set_xlabel('')
+        ax.tick_params(axis='x', rotation=giro)
+
+        if mostrar_valores:
+            for p in ax.patches:
+                height = p.get_height()
+                ax.annotate(f'{height:.2f}', (p.get_x() + p.get_width() / 2., height), 
+                            ha='center', va='center', xytext=(0, 9), textcoords='offset points')
+
+    for j in range(i + 1, num_filas * 2):
+        axes[j].axis('off')
+
+    plt.tight_layout()
+    plt.show()
 
 
 def tipifica_variables(df: pd.DataFrame, umbral_categoria: int, umbral_continua: float):
@@ -130,9 +167,8 @@ def total_transform(df_main):
     df.loc[df["pre_cancel"] < 0, "pre_cancel"] = 0
     df.loc[df["pre_not_cancel"] < 0, "pre_not_cancel"] = 0
     df.loc[df["pre_cancel"] > 0, "pre_cancel"] = 1
-    df.loc[df["pre_not_cancel"] > 0, "pre_not_cancel"] = 1
-    
-    #---------------------------- CAMBIO 8-----------------------------------------
+    df.loc[df["pre_not_cancel"] > 0, "pre_not_cancel"] = 1    
+    #---------------------------- CAMBIO 7-----------------------------------------
     # ASIGNACIÓN DE MEDIANA EN VALORES INCONSISTENTES COINCIDENTES EN LAS COLUMNAS 'week_nights' y 'weekend_nights'
     # TRANSFORMACIÓN DE ETIQUETAS PARA UNIFICAR LOS VALORES POR ENCIMA DE 5 EN 'week_nights' Y POR ENCIMA DE 2 EN 'weekend_nights'
     # ASIGNACIÓN DE MEDIANA A VALORES NULL
@@ -143,7 +179,7 @@ def total_transform(df_main):
     df.loc[((df["week_nights"] == 0)&(df["weekend_nights"] == 0)), "week_nights"] = 2    
     df.loc[df["week_nights"] > 5, "week_nights"] = 6
     df.loc[df["weekend_nights"] > 2, "weekend_nights"] = 3
-    #---------------------------- CAMBIO 9-----------------------------------------
+    #---------------------------- CAMBIO 8-----------------------------------------
     # TRANSFORMACIÓN DE 'meal_plan' A VARIABLE NUMÉRICA CON ORDINAL ENCODER
     # ASIGNACIÓN DE MODA A VALORES NULL
     list_meal = ["SC","RO","BB","HB","FB"]
@@ -151,14 +187,13 @@ def total_transform(df_main):
     df.loc[~df["meal_plan"].isin(list_meal), "meal_plan"] = "BB"   
     encoder = OrdinalEncoder(categories=[["SC","RO","BB","HB","FB"]])    
     df[["meal_plan"]] = encoder.fit_transform(df[["meal_plan"]])
-    #---------------------------- CAMBIO 10-----------------------------------------
+    #---------------------------- CAMBIO 9-----------------------------------------
     # TRANSFORMACIÓN DE 'parking' A VARIABLE BINARIA
     # ASIGNACIÓN DE MEDIANA A VALORES NULL
     df.loc[df["parking"].isnull(), "parking"] = 0
     df.loc[df["parking"] < 0, "parking"] = 0
     df.loc[df["parking"] > 0, "parking"] = 1
-
-    #---------------------------- CAMBIO 7-----------------------------------------
+    #---------------------------- CAMBIO 10-----------------------------------------
     # ELIMINACIÓN DE 'arr_date'
     df.drop(columns = ["arr_date"], inplace = True)
 
