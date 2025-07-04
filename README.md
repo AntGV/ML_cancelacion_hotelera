@@ -20,8 +20,8 @@ La compañía facilita los datos de las reservas recibidas entre los años 2015-
 
 ### Datasets empleados
 Los datos se han extraído de las siguientes fuentes:
-* **[Hotel_Reservations]("https://www.kaggle.com/datasets/ahsan81/hotel-reservations-classification-dataset")**
-* **[Hotel_Bookings]("https://www.kaggle.com/datasets/moro146/hotel-bookings")**
+* **[Hotel_Reservations](https://www.kaggle.com/datasets/ahsan81/hotel-reservations-classification-dataset)**
+* **[Hotel_Bookings](https://www.kaggle.com/datasets/moro146/hotel-bookings)**
 
 A lo largo del proyecto se ha llevado a cabo un proceso de adecuación de las variables contenidas en ambos para poder ser empleados en conjunto.  
 Posteriormente se han transformado sus valores para una mejor evaluación del modelo.  
